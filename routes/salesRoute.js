@@ -11,14 +11,15 @@ const {
     updateSalesStatus,
     getCompletedSales,
     getUserSales,
-    getUserCompletedSales
+    getUserCompletedSales,
+    updatePayment
 } = require('../controllers/salesController')
 
-router.route('/:id').get(authorized, getOneSales).put(authorized, updateSalesStatus)
+router.route('/:id').get(getOneSales).put(authorized, updateSalesStatus)
 router.route('/user/completed/:limit?/:skip?/:search?').get(authorized, getUserCompletedSales)
 router.route('/completed/:limit?/:skip?/:search?').get(authorized, getCompletedSales)
 router.route('/user/:limit?/:skip?/:search?').get(authorized, getUserSales)
 router.route('/:limit?/:skip?/:search?').get(authorized, getSales)
-router.route('/').post(setSales).get(authorized, getSales)
+router.route('/').post(setSales).get(authorized, getSales).put(updatePayment)
 
 module.exports = router

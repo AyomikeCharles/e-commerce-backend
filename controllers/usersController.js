@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken')
 const Users = require('../models/userModel')
 const Roles = require('../models/roleModel')
 
+const main = require('../nodemailer') 
+
 
 //access token generator
 const generateAccessToken = (id, role, link) =>{
@@ -260,9 +262,20 @@ const  setAllUsers = asyncHandler( async (req, res) =>{
 
     if(user){
 
+        //send email verification
+
+        const verificationToken = Math.random().toString(36).substring(2);
+        const link = `http://localhost:3000/verify/${verificationToken}`
+        const message = `kindly verify your email with this link ${link}`
+        const subject = 'Email Verification'
+
+        await main(user.email, message, subject).catch(err=>{
+            // console.log(err)
+        });
+
         const firstRefreshToken = generateRefreshToken(user.id)
 
-        await Users.findByIdAndUpdate(user.id,{refreshToken:firstRefreshToken}, {$currentDate:{lastUpdate:true}})
+        await Users.findByIdAndUpdate(user.id,{refreshToken:firstRefreshToken, verificationStatus:verificationToken}, {$currentDate:{lastUpdate:true}})
         const rolePath = await Roles.findById(user.role)
         const path = rolePath.path
         res.cookie('jwtRefreshToken', firstRefreshToken, {httpOnly:true, maxAge:24 * 60 * 60 * 1000})//change httpOnly to httpsOnly in production, also add secure:true and sameSite:'none' if project is added on different hosting platform
@@ -492,6 +505,34 @@ const  changePassword = asyncHandler( async (req, res) =>{
 
 
 
+const changepassword = asyncHandler( async (req, res) =>{
+    const { code, newpassword } = req.body;
+
+    if(!code || !newpassword){
+        res.status(400)
+        throw new Error('please fill all fields')
+    }
+
+    //hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashNewPassword = await bcrypt.hash(newpassword, salt);
+
+
+        const cp = await Users.findOneAndUpdate(
+            {forgetPasswordcode:code},
+            {$set:{password:hashNewPassword}}, 
+            {$currentDate:{lastUpdate:true}}
+            )
+
+            if(cp){
+                res.status(200).json({message:'password has been changed successfully'})
+            }else{
+                res.status(401)
+                throw new Error('unable to change password')
+            }
+
+    
+})
 
 //@desc use to delete account
 //@route DELETE /api/users/
@@ -510,6 +551,66 @@ const  deleteUser = asyncHandler( async (req, res) =>{
 
 
 })
+
+
+const  verifyemail = asyncHandler( async (req, res) =>{
+    const { vid } = req.body;
+
+    if(!vid){
+        res.status(400)
+        throw new Error('bad request')
+    }
+
+   
+
+    //get user old password
+    const user = await Users.findOneAndUpdate({verificationStatus:vid}, {$set:{verificationStatus:'verified'}},{$currentDate:{lastUpdate:true}});
+
+    if(user){
+        res.status(200).json({message:'email verified successfully'})
+    }else{
+        res.status(400)
+        throw new Error('unable to verify email')
+    }
+
+    
+})
+
+
+
+
+const  forgetPassword = asyncHandler( async (req, res) =>{
+    const { email } = req.body;
+
+    if(!email){
+        res.status(400)
+        throw new Error('bad request')
+    }
+    const passwordToken = Math.random().toString(36).substring(2);
+   
+
+    //get user old password
+    const user = await Users.findOneAndUpdate({email}, {$set:{forgetPasswordcode:passwordToken}},{$currentDate:{lastUpdate:true}});
+
+    if(user){
+
+        const link = `http://localhost:3000/changepassword/${passwordToken}`
+        const message = `kindly change your password with this link ${link}`
+        const subject = 'Forget Password'
+
+        await main(user.email, message, subject).catch(err=>{
+            // console.log(err)
+        });
+        res.status(200).json({message:'a change password link has been sent to your mail'})
+    }else{
+        res.status(400)
+        throw new Error('unable find email in our database')
+    }
+
+    
+})
+
+
 
 
 
@@ -543,6 +644,9 @@ module.exports = {
     deleteUserByAdmin,
     searchAllAdmin,
     searchAlluser,
-    changeRole
+    changeRole,
+    verifyemail,
+    forgetPassword,
+    changepassword
 
 }

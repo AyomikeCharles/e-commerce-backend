@@ -2,6 +2,10 @@ const Sales = require('../models/salesModel')
 const asyncHandler = require('express-async-handler')
 const Roles = require('../models/roleModel')
 const jwt = require('jsonwebtoken')
+const main = require('../nodemailer') 
+// const https = require('https')
+const axios = require('axios')
+
 
 
 const getSales = asyncHandler(async (req, res)=>{
@@ -144,7 +148,7 @@ const setSales = asyncHandler(async (req, res)=>{
     subtotal} = req.body
 
 
-    let userid = ''
+    let userid
 
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
         
@@ -174,7 +178,7 @@ const setSales = asyncHandler(async (req, res)=>{
     }
 
 
-    const sales = Sales.create({
+    const sales = await Sales.create({
         user:userid,
         shipping:[stateName,lga,address],
         moreDetails,
@@ -186,6 +190,13 @@ const setSales = asyncHandler(async (req, res)=>{
     })
 
     if(sales){
+        const link = `http://localhost:3000/payment/${sales._id}`
+        const message = `you have made an order with ID:${sales._id}, you can make payment with this link ${link}, kindly ingnore if you has already made payment`
+        const subject = 'Your Order'
+
+        await main(sales.personalDetails[1], message, subject).catch(err=>{
+            // console.log(err)
+        });
         res.status(200).json(sales)
     }else{
         res.status(400)
@@ -247,6 +258,50 @@ const getUserCompletedSales = asyncHandler(async (req, res)=>{
 
 
 
+
+
+const updatePayment = asyncHandler(async (req, res) => {
+    // Make an HTTP request to verify the transaction
+
+    const { ref } = req.body
+
+
+   
+
+    const options = {
+        method: 'GET',
+        url: `https://api.paystack.co/transaction/verify/${ref}`,
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`
+        }
+      };
+      
+       axios(options)
+        .then(async response => {
+          if( response.data.data.status === 'success'){
+            
+            const updateSale = await Sales.findByIdAndUpdate(ref, {paymentStatus:'paid'}, {$CurrentDate:{lastUpdate:true}})
+
+            if(updateSale){
+                res.status(200).json({message:'payment has be confirm'})
+            }else{
+                res.status(400)
+                throw new Error('payment has been confirm but unable to update payment status, we will get back to you shortly')
+            }
+          }else{
+            res.status(200).json({message:`your payment status was ${response.data.data.status}, kindly contact us`})
+          }
+        })
+        .catch(error => {
+            res.status(400)
+            throw new Error(`unable to verify this transaction, due to the following error ${error}, kindly contact us`)
+        });
+    
+
+  });
+
+
+
 module.exports = {
     getSales,
     setSales,
@@ -254,5 +309,6 @@ module.exports = {
     updateSalesStatus,
     getCompletedSales,
     getUserSales,
-    getUserCompletedSales
+    getUserCompletedSales,
+    updatePayment
 }

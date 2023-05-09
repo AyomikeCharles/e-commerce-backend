@@ -31,10 +31,14 @@ const UsersSchema = mongoose.Schema({
         default:'unblock',
         required:[true, 'status is required']
     },
-    state:{
+    verificationStatus:{
         type:String,
         default:'unverified',
         required:[true, 'state is required']
+    },
+    forgetPasswordcode:{
+        type:String,
+        default:'',
     },
     refreshToken:{
         type:String

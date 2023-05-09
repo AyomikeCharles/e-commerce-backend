@@ -16,7 +16,10 @@ const {
     deleteUserByAdmin,
     searchAllAdmin,
     searchAlluser,
-    changeRole
+    changeRole,
+    verifyemail,
+    forgetPassword,
+    changepassword
 
 } = require('../controllers/usersController')
 
@@ -37,6 +40,14 @@ router.route('/search/:limit?/:skip?').get(authorized, authorizedRoles('69t8@8h7
 
 //change user role 
 router.route('/roleupdate/:id').put(authorized, authorizedRoles('69t8@8h7rj6'), changeRole)
+
+router.route('/verifyemail').put(verifyemail)
+
+router.route('/forgetpassword').put(forgetPassword)
+
+router.route('/changepassword').put(changepassword)
+
+
 
 //view your own profile
 router.route('/personal-profile').get(authorized, getPersonalProfile)
