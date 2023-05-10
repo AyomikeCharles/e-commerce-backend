@@ -44,6 +44,7 @@ app.use('/api/products', require('./routes/productsRoute'))
 app.use('/api/states', require('./routes/statesRoute'))
 app.use('/api/lga', require('./routes/lgaRoute'))
 app.use('/api/sales', require('./routes/salesRoute'));
+app.use('/api/wishlist', require('./routes/wishlistRoute'));
 app.use('/api/refreshToken', require('./routes/refreshTokenRoute'));
 app.use('/api/logout', require('./routes/logoutRoute'));
 app.use(errorHandler)
