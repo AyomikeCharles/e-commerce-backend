@@ -32,8 +32,9 @@ app.use(compression({
 }))
 app.use(cors({
     credentials: true,
-    origin:'https://brezzy.netlify.app'//change to frontend url later
+    origin:'https://brezzy.netlify.app'
 }))
+
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
