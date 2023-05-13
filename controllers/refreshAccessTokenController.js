@@ -50,7 +50,7 @@ const refreshTokenControl = asyncHandler( async  (req, res) =>{
         const path = rolePath.path
         //generate new access token
         const newAccessToken = generateAccessToken(user.id, user.role, path);
-        res.cookie('jwtRefreshToken', newRefreshToken, {httpOnly:true, sameSite:'none', maxAge:24 * 60 * 60 * 1000})//change httpOnly to httpsOnly in production, also add secure:true and sameSite:'none' if project is added on different hosting platform
+        res.cookie('jwtRefreshToken', newRefreshToken, {httpsOnly:true, sameSite:'none', secure:true, maxAge:24 * 60 * 60 * 1000})//change httpOnly to httpsOnly in production, also add secure:true and sameSite:'none' if project is added on different hosting platform
         res.status(200).json(newAccessToken)
     }
 

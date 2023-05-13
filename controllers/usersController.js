@@ -278,7 +278,7 @@ const  setAllUsers = asyncHandler( async (req, res) =>{
         await Users.findByIdAndUpdate(user.id,{refreshToken:firstRefreshToken, verificationStatus:verificationToken}, {$currentDate:{lastUpdate:true}})
         const rolePath = await Roles.findById(user.role)
         const path = rolePath.path
-        res.cookie('jwtRefreshToken', firstRefreshToken, {httpOnly:true, maxAge:24 * 60 * 60 * 1000})//change httpOnly to httpsOnly in production, also add secure:true and sameSite:'none' if project is added on different hosting platform
+        res.cookie('jwtRefreshToken', firstRefreshToken, {httpsOnly:true, sameSite:'none', secure:true, maxAge:24 * 60 * 60 * 1000})//change httpOnly to httpsOnly in production, also add secure:true and sameSite:'none' if project is added on different hosting platform
         res.status(200).json({
             fullName:user.fullName,
             email:user.email,
@@ -325,7 +325,7 @@ const  setUser = asyncHandler( async (req, res) =>{
             )
 
             //send refresh token in cookie as httponly
-        res.cookie('jwtRefreshToken',  newRefreshToken, {httpOnly:true,  maxAge:24 * 60 * 60 * 1000})//change httpOnly to httpsOnly in production, also add secure:true and sameSite:'none' if project is added on different hosting platform
+        res.cookie('jwtRefreshToken',  newRefreshToken, {httpsOnly:true, sameSite:'none', secure:true, maxAge:24 * 60 * 60 * 1000})//change httpOnly to httpsOnly in production, also add secure:true and sameSite:'none' if project is added on different hosting platform
         //send user details and access token
         res.status(200).json({
             fullName:user.fullName,
