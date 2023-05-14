@@ -32,7 +32,7 @@ app.use(compression({
 }))
 app.use(cors({
     credentials: true,
-    origin:'http://localhost:3000'/*https://brezzy.netlify.app*/
+    origin:'https://brezzy.netlify.app'
 }))
 
 app.use(cookieParser())
