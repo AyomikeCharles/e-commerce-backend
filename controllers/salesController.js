@@ -162,17 +162,17 @@ const setSales = asyncHandler(async (req, res)=>{
 
         
 
-        // if(role === '69t8@8h7rj6' || role === '5ry5@9%96'){
-        //     res.status(400)
-        //     throw new Error('you are not allowed to carry out this operation')
-        // }
+        if(role === '69t8@8h7rj6' || role === '5ry5@9%96'){
+            res.status(400)
+            throw new Error('you are not allowed to carry out this operation')
+        }
             
     }
 
     
 
 
-    if(!name || !email || !phoneNumber || !whatsapp || !state || !stateName || !lga ||!address || !products || !shippingPrice || !subtotal){
+    if(!name || !email || !phoneNumber || !state || !stateName || !lga ||!address || !products || !shippingPrice || !subtotal){
         res.status(400)
         throw new Error('please fill all field')
     }
@@ -190,7 +190,7 @@ const setSales = asyncHandler(async (req, res)=>{
     })
 
     if(sales){
-        const link = `http://localhost:3000/payment/${sales._id}`
+        const link = `https://brezzy.netlify.app/payment/${sales._id}`
         const message = `you have made an order with ID:${sales._id}, you can make payment with this link ${link}, kindly ingnore if you has already made payment`
         const subject = 'Your Order'
 

@@ -265,7 +265,7 @@ const  setAllUsers = asyncHandler( async (req, res) =>{
         //send email verification
 
         const verificationToken = Math.random().toString(36).substring(2);
-        const link = `http://localhost:3000/verify/${verificationToken}`
+        const link = `https://brezzy.netlify.app/verify/${verificationToken}`
         const message = `kindly verify your email with this link ${link}`
         const subject = 'Email Verification'
 
@@ -490,7 +490,7 @@ const  changePassword = asyncHandler( async (req, res) =>{
             )
 
             if(cp){
-                res.status(200).json({message:`password changed successfully`})
+                res.status(200).json({message:`password changed successfully, kindly proceed to login`})
 
             }else{
                 res.status(400)
@@ -520,7 +520,7 @@ const changepassword = asyncHandler( async (req, res) =>{
 
         const cp = await Users.findOneAndUpdate(
             {forgetPasswordcode:code},
-            {$set:{password:hashNewPassword}}, 
+            {$set:{password:hashNewPassword, forgetPasswordcode:''}}, 
             {$currentDate:{lastUpdate:true}}
             )
 

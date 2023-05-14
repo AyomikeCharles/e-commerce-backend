@@ -38,8 +38,7 @@ const addWishlist = asyncHandler( async(req, res)=>{
         const theProduct = allProduct.find(prod=>prod._id === product._id)
 
         if(theProduct){
-            res.status(400)
-            throw new Error('this product already exist in your wishlist')
+            res.status(200).json({message:'this product already exist in your wishlist'})
         }else{
 
             allProduct.push(product)
