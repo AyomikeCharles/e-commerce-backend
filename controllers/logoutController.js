@@ -8,7 +8,7 @@ const logout = asyncHandler( async (req, res) => {
 
     //check cookie for refresh token
     if(!cookies?.jwtRefreshToken){
-        res.status(200).json({message:"already logged out"})
+        res.status(200).json({message:"cookies not found"})
     }
 
     const refreshToken = cookies.jwtRefreshToken;
