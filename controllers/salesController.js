@@ -191,7 +191,7 @@ const setSales = asyncHandler(async (req, res)=>{
 
     if(sales){
         const link = `https://brezzy.netlify.app/payment/${sales._id}`
-        const message = `you have made an order with ID:${sales._id}, you can make payment with this link ${link}, kindly ingnore if you has already made payment`
+        const message = `hi ${sales.personalDetails[0]},! you have made an order from https://brezzy.netlify.app,! you can make payment with this link below,! ${link},! kindly ignore if you have already made payment.! thank you for shopping with us :).`
         const subject = 'Your Order'
 
         await main(sales.personalDetails[1], message, subject).catch(err=>{

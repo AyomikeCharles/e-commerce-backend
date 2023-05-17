@@ -266,7 +266,7 @@ const  setAllUsers = asyncHandler( async (req, res) =>{
 
         const verificationToken = Math.random().toString(36).substring(2);
         const link = `https://brezzy.netlify.app/verify/${verificationToken}`
-        const message = `kindly verify your email with this link ${link}`
+        const message = `Hi ${user.fullName}, ! kindly verify your email with the link below ! ${link}! thank you for shopping with us :)`
         const subject = 'Email Verification'
 
         await main(user.email, message, subject).catch(err=>{
@@ -595,7 +595,7 @@ const  forgetPassword = asyncHandler( async (req, res) =>{
     if(user){
 
         const link = `http://localhost:3000/changepassword/${passwordToken}`
-        const message = `kindly change your password with this link ${link}`
+        const message = `Hi there,! kindly change your password with the link below !${link}! if you did not make this request, please ignore.`
         const subject = 'Forget Password'
 
         await main(user.email, message, subject).catch(err=>{
