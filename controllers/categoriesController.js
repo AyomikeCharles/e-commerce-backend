@@ -1,3 +1,6 @@
+// git config --global user.email yournew@email.com
+// git config --global user.name yournewgoodname
+
 
 const asyncHandler = require('express-async-handler');
 const Categories = require('../models/categoryModel')
@@ -74,9 +77,10 @@ const  addCategory = asyncHandler( async (req, res) =>{
 
     // Generate 
     const url = cloudinary.url(`${icon.filename}`, {
-        width: 200,
-        height: 200,
-        Crop: 'fill'
+        Crop: 'fill',
+        secure:true,
+        width:200,
+        height:200
     });
 
     //create category
@@ -128,7 +132,7 @@ const  editCategory = asyncHandler( async (req, res) =>{
     }else{
 
         //update image by delecting old image and uploading a new one
-        let oldImagePid = catExist.icon.split('/')[7]
+        let oldImagePid = catExist.icon
 
         const deletOldImage = await cloudinary.uploader.destroy(oldImagePid, (error, result) => {
             if (!error) {
@@ -151,9 +155,10 @@ const  editCategory = asyncHandler( async (req, res) =>{
 
                 // Generate 
                 newImgUrl = cloudinary.url(`${icon.filename}`, {
-                    width: 200,
-                    height: 200,
-                    Crop: 'fill'
+                    Crop: 'fill',
+                    secure:true,
+                    width:200,
+                    height:200
                 });
 
 

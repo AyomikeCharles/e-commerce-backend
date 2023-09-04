@@ -32,7 +32,7 @@ app.use(compression({
 }))
 app.use(cors({
     credentials: true,
-    origin:'https://beztseller.netlify.app'
+    origin:'https://beztseller.vercel.app'
 }))
 
 app.use(cookieParser())
